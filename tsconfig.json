@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "strictFunctionTypes": true,
+        "strictNullChecks": true,
+        "module": "commonjs",
+        "outDir": "./dst",
+        "target": "es6",
+        "declaration": true,
+    },
+    "exclude": [
+        "dst",
+        "node_modules",
+    ],
+}
