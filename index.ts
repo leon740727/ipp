@@ -1,11 +1,11 @@
 import * as ipp from 'ipp';
 
-export function info (uri: string): Promise<ipp.printerAttributes> {
+export function info (uri: string): Promise<printerAttributes> {
     return new Promise((resolve, reject) => {
         ipp.Printer(uri).execute(
             'Get-Printer-Attributes',
             {'operation-attributes-tag': {}},
-            (err, res: ipp.printerAttributes) => {
+            (err, res: printerAttributes) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -28,7 +28,7 @@ export async function print (
     data: Buffer,
     param?: {
         docName?: string,
-        jobAttributes?: Partial<ipp.jobAttributes>,
+        jobAttributes?: Partial<jobAttributes>,
     },
 ): Promise<printResult> {
     return new Promise((resolve, reject) => {
@@ -52,6 +52,24 @@ export async function print (
     });
 }
 
+type jobAttributes = {
+    media: string,
+    'media-col': Partial<mediaCol>,             // 印表機不一定支援
+    [others: string]: primitive | primitive[] | attr | any;
+}
+
+type printerAttributes = {
+    'printer-attributes-tag': {
+        'printer-info': string,                 // ex. 'Kyocera TASKalfa 3010i'
+        'media-size-supported': size[],
+        'media-supported': string[],            // ex. ['iso_a4_210x297mm', ...]
+        'media-ready': string[],                // ex. ['iso_a5_148x210mm']
+        'media-col-ready': mediaCol[],
+        'media-source-supported': string[],     // ex. ['auto', 'by-pass-tray', 'tray-1', 'tray-2']
+        'document-format-supported': string[],  // ex. ['application/pdf', 'image/jpeg']
+    },
+}
+
 type printResult = {
     version: string,                // ex. '2.0'
     statusCode: string,             // ex. 'successful-ok'
@@ -63,3 +81,17 @@ type printResult = {
         'job-state-reasons': string,  // ex. 'job-incoming'
     },
 }
+
+type mediaCol = {
+    'media-size': size,
+    [others: string]: primitive | primitive[] | attr;
+}
+
+type size = {
+    'x-dimension': number | number[],
+    'y-dimension': number | number[],
+}
+
+type attr = { [field: string]: primitive | primitive[] | attr };
+
+type primitive = string | number | boolean;
